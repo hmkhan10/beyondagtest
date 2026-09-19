@@ -3,9 +3,9 @@ import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import { randomUUID } from 'crypto';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
-import { Agent, generateTestPlan, discoverScreens, exportAll } from '@beyondagtest/core';
+import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from '@beyondagtest/core';
 import type { AppConfig, AgentConfig, TestResult, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from '@beyondagtest/core';
 
 const app = express();
@@ -25,7 +25,7 @@ for (const dir of [DATA_DIR, RESULTS_DIR, AGENTS_DIR, PROVIDERS_DIR, SCHEDULES_D
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(join(import.meta.dirname, '../web/dist')));
+app.use(express.static(join(__dirname, '../web/dist')));
 
 const clients = new Set<WebSocket>();
 
@@ -55,9 +55,9 @@ function saveJson(dir: string, id: string, data: unknown): void {
 
 function listDir(dir: string): string[] {
   if (!existsSync(dir)) return [];
-  return require('fs').readdirSync(dir)
-    .filter((f: string) => f.endsWith('.json'))
-    .map((f: string) => f.replace('.json', ''));
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => f.replace('.json', ''));
 }
 
 // Results API
@@ -107,9 +107,9 @@ app.put('/api/agents/:id', (req, res) => {
 });
 
 app.delete('/api/agents/:id', (req, res) => {
-  const path = join(AGENTS_DIR, `${req.params.id}.json`);
-  if (!existsSync(path)) return res.status(404).json({ error: 'Not found' });
-  require('fs').unlinkSync(path);
+  const filePath = join(AGENTS_DIR, `${req.params.id}.json`);
+  if (!existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+  unlinkSync(filePath);
   res.json({ ok: true });
 });
 
@@ -127,9 +127,9 @@ app.post('/api/providers', (req, res) => {
 });
 
 app.delete('/api/providers/:id', (req, res) => {
-  const path = join(PROVIDERS_DIR, `${req.params.id}.json`);
-  if (!existsSync(path)) return res.status(404).json({ error: 'Not found' });
-  require('fs').unlinkSync(path);
+  const filePath = join(PROVIDERS_DIR, `${req.params.id}.json`);
+  if (!existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+  unlinkSync(filePath);
   res.json({ ok: true });
 });
 
@@ -226,18 +226,8 @@ app.post('/api/schedules', (req, res) => {
   res.json({ id, ...req.body });
 });
 
-function detectStack(appPath: string): Stack {
-  const fs = require('fs');
-  const path = require('path');
-  if (fs.existsSync(path.join(appPath, 'pubspec.yaml'))) return 'flutter';
-  if (fs.existsSync(path.join(appPath, 'Package.swift'))) return 'swiftui';
-  if (fs.existsSync(path.join(appPath, 'build.gradle.kts'))) return 'kotlin';
-  if (fs.existsSync(path.join(appPath, 'build.gradle'))) return 'java';
-  return 'react-native';
-}
-
 app.get('*', (_req, res) => {
-  const indexPath = join(import.meta.dirname, '../web/dist/index.html');
+  const indexPath = join(__dirname, '../web/dist/index.html');
   if (existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {

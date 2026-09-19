@@ -3,7 +3,9 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
-import { Agent, generateTestPlan, discoverScreens, exportAll } from '@beyondagtest/core';
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from '@beyondagtest/core';
 import type { AppConfig, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from '@beyondagtest/core';
 
 const program = new Command();
@@ -106,7 +108,6 @@ program
 
     for (const check of checks) {
       try {
-        const { execSync } = await import('child_process');
         const version = execSync(check.cmd, { stdio: 'pipe', timeout: 10000 }).toString().trim().split('\n')[0];
         console.log(chalk.green(`  ✔ ${check.name}: ${version}`));
       } catch {
@@ -122,8 +123,7 @@ program
   .requiredOption('-r, --results <path>', 'Path to results JSON file')
   .option('-f, --format <format>', 'Export format (html|json|markdown|all)', 'all')
   .option('-o, --output <dir>', 'Output directory', './beyondagtest-reports')
-  .action(async (opts) => {
-    const { readFileSync } = await import('fs');
+  .action((opts) => {
     const result = JSON.parse(readFileSync(opts.results, 'utf-8'));
     const paths = exportAll(result, {
       format: opts.format,
@@ -137,18 +137,5 @@ program
       console.log(chalk.gray(`  ${format}: ${path}`));
     }
   });
-
-function detectStack(appPath: string): Stack {
-  const { existsSync } = require('fs');
-  const { join } = require('path');
-
-  if (existsSync(join(appPath, 'pubspec.yaml'))) return 'flutter';
-  if (existsSync(join(appPath, 'Package.swift'))) return 'swiftui';
-  if (existsSync(join(appPath, 'build.gradle.kts'))) return 'kotlin';
-  if (existsSync(join(appPath, 'build.gradle'))) return 'java';
-  if (existsSync(join(appPath, 'app.json')) || existsSync(join(appPath, 'package.json'))) return 'react-native';
-
-  return 'react-native';
-}
 
 program.parse(process.argv);

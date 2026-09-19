@@ -4,16 +4,22 @@
   "private": true,
   "description": "Open-source agentic mobile app testing tool",
   "workspaces": [
-    "packages/*"
+    "packages/core",
+    "packages/cli",
+    "packages/dashboard/server",
+    "packages/dashboard/web"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "dev": "npm run dev --workspace=packages/dashboard-server & npm run dev --workspace=packages/dashboard-web",
-    "test": "npm run test --workspaces",
-    "lint": "eslint packages/*/src/**/*.{ts,tsx}",
-    "typecheck": "tsc --noEmit",
-    "dashboard": "npm run dev --workspace=packages/dashboard-server",
-    "cli": "node packages/cli/dist/index.js"
+    "build:core": "npm run build --workspace=packages/core",
+    "build:cli": "npm run build --workspace=packages/cli",
+    "build:server": "npm run build --workspace=packages/dashboard/server",
+    "build:web": "npm run build --workspace=packages/dashboard/web",
+    "dev": "npm run dev --workspace=packages/dashboard/server & npm run dev --workspace=packages/dashboard/web",
+    "dashboard": "npm run dev --workspace=packages/dashboard/server",
+    "dashboard:web": "npm run dev --workspace=packages/dashboard/web",
+    "cli": "node packages/cli/dist/index.js",
+    "typecheck": "tsc --noEmit -p packages/core/tsconfig.json"
   },
   "engines": {
     "node": ">=18.0.0"

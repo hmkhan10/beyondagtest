@@ -1,3 +1,11 @@
 export { Agent } from './agent/agent.js';
 export { generateTestPlan, discoverScreens } from './agent/planner.js';
+export { AndroidEmulator, IosSimulator, EmulatorManager } from './emulators/index.js';
+export { analyzeCode } from './analyzers/code.js';
+export { analyzePerformance } from './analyzers/performance.js';
+export { analyzeAccessibility, analyzeUiLayout } from './analyzers/ui.js';
+export { exportJson, exportMarkdown, exportHtml, exportAll } from './export/index.js';
+export { PluginLoader } from './plugins/loader.js';
+export type { BeyondAgtestPlugin, PluginConfig, PluginResult, PluginManifest } from './plugins/types.js';
+export { exec, detectStack, readJson, sleep } from './utils/index.js';
 export * from './types/index.js';
