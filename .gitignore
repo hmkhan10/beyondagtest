@@ -32,3 +32,4 @@ beyondagtest-results/
 beyondagtest-reports/
 node_modules/
 .next/
+.vercel
