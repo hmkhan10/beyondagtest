@@ -4,9 +4,13 @@ import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from '@beyondagtest/core';
 import type { AppConfig, AgentConfig, TestResult, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from '@beyondagtest/core';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const server = createServer(app);
@@ -25,7 +29,7 @@ for (const dir of [DATA_DIR, RESULTS_DIR, AGENTS_DIR, PROVIDERS_DIR, SCHEDULES_D
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(join(__dirname, '../web/dist')));
+app.use(express.static(join(__dirname, '../../web/dist')));
 
 const clients = new Set<WebSocket>();
 
@@ -227,7 +231,7 @@ app.post('/api/schedules', (req, res) => {
 });
 
 app.get('*', (_req, res) => {
-  const indexPath = join(__dirname, '../web/dist/index.html');
+  const indexPath = join(__dirname, '../../web/dist/index.html');
   if (existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {

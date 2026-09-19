@@ -1,11 +1,11 @@
-import type { TestContext, Issue } from '../types/index.js';
+import type { AppConfig, Issue } from '../types/index.js';
 
 export interface BeyondAgtestPlugin {
   name: string;
   version: string;
   description: string;
   setup(config: PluginConfig): Promise<void>;
-  analyze(context: TestContext): Promise<PluginResult>;
+  analyze(appConfig: AppConfig): Promise<PluginResult>;
 }
 
 export interface PluginConfig {
