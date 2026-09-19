@@ -6,13 +6,27 @@ interface StepInfo {
   total: number;
 }
 
+const stepIcons: Record<string, string> = {
+  navigate: '🧭',
+  tap: '👆',
+  swipe: '👋',
+  type: '⌨️',
+  screenshot: '📸',
+  log: '📋',
+  wait: '⏳',
+  assert: '✅',
+};
+
 export default function TestRun() {
   const [steps, setSteps] = useState<StepInfo[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [status, setStatus] = useState('connecting');
+  const [mounted, setMounted] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const stepsEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const ws = new WebSocket(`${protocol}//${window.location.host}`);
     wsRef.current = ws;
@@ -36,44 +50,117 @@ export default function TestRun() {
     return () => ws.close();
   }, []);
 
+  useEffect(() => {
+    stepsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [steps]);
+
   const progress = steps.length > 0 ? (steps[steps.length - 1].index + 1) / steps[steps.length - 1].total : 0;
 
+  const statusColors: Record<string, { dot: string; text: string }> = {
+    connecting: { dot: 'bg-yellow-500 animate-pulse', text: 'text-yellow-400' },
+    connected: { dot: 'bg-emerald-500 animate-pulse', text: 'text-emerald-400' },
+    complete: { dot: 'bg-emerald-500', text: 'text-emerald-400' },
+    error: { dot: 'bg-red-500', text: 'text-red-400' },
+    disconnected: { dot: 'bg-zinc-500', text: 'text-zinc-400' },
+  };
+
+  const currentStatus = statusColors[status] || statusColors.disconnected;
+
   return (
-    <div className="min-h-screen p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Live Test Run</h1>
+    <div className="min-h-screen">
+      <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className={`transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <h1 className="text-2xl font-bold tracking-tight mb-6">
+            <span className="gradient-text">Live Test Run</span>
+          </h1>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-zinc-400">Status: <span className={`font-medium ${status === 'connected' ? 'text-green-400' : 'text-zinc-500'}`}>{status}</span></span>
-          <span className="text-sm text-zinc-400">Steps: {steps.length}</span>
-        </div>
-        <div className="w-full bg-zinc-800 rounded-full h-2">
-          <div className="bg-white h-2 rounded-full transition-all" style={{ width: `${progress * 100}%` }} />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-6">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Steps</h2>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {steps.map((s, i) => (
-              <div key={i} className="text-sm flex gap-2">
-                <span className="text-zinc-500">{s.index + 1}/{s.total}</span>
-                <span className="text-zinc-300">{s.step.type}</span>
-                {s.step.target && <span className="text-zinc-500">({s.step.target})</span>}
+          {/* Status Card */}
+          <div className="card p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${currentStatus.dot}`} />
+                <span className={`text-sm font-medium capitalize ${currentStatus.text}`}>{status}</span>
               </div>
-            ))}
-            {steps.length === 0 && <p className="text-zinc-500 text-sm">Waiting for test to start...</p>}
+              <div className="flex items-center gap-4 text-sm text-zinc-400">
+                <span>Steps: {steps.length}</span>
+                <span>Logs: {logs.length}</span>
+              </div>
+            </div>
+            <div className="w-full bg-zinc-800/50 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-white/60 to-white/80 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
+            {progress > 0 && (
+              <div className="text-right text-xs text-zinc-500 mt-1.5">
+                {Math.round(progress * 100)}% complete
+              </div>
+            )}
           </div>
-        </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Agent Log</h2>
-          <div className="space-y-1 max-h-96 overflow-y-auto font-mono text-xs">
-            {logs.map((log, i) => (
-              <div key={i} className="text-zinc-400">{log}</div>
-            ))}
-            {logs.length === 0 && <p className="text-zinc-500">No logs yet...</p>}
+          {/* Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Steps */}
+            <div className="card p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center">
+                  <span className="text-sm">📝</span>
+                </div>
+                <h2 className="font-semibold">Steps</h2>
+              </div>
+              <div className="space-y-1.5 max-h-96 overflow-y-auto pr-2">
+                {steps.map((s, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 text-sm py-1.5 px-2 rounded-md hover:bg-zinc-800/30 transition-colors"
+                  >
+                    <span className="text-zinc-600 text-xs w-8 text-right font-mono">
+                      {s.index + 1}/{s.total}
+                    </span>
+                    <span className="text-base">{stepIcons[s.step.type] || '▸'}</span>
+                    <span className="text-zinc-300 capitalize">{s.step.type}</span>
+                    {s.step.target && (
+                      <span className="text-zinc-500 text-xs truncate">({s.step.target})</span>
+                    )}
+                  </div>
+                ))}
+                {steps.length === 0 && (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-3 animate-bounce-subtle">
+                      <span className="text-xl">⏳</span>
+                    </div>
+                    <p className="text-zinc-500 text-sm">Waiting for test to start...</p>
+                  </div>
+                )}
+                <div ref={stepsEndRef} />
+              </div>
+            </div>
+
+            {/* Agent Log */}
+            <div className="card p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center">
+                  <span className="text-sm">📋</span>
+                </div>
+                <h2 className="font-semibold">Agent Log</h2>
+              </div>
+              <div className="space-y-1 max-h-96 overflow-y-auto pr-2 font-mono text-xs">
+                {logs.map((log, i) => (
+                  <div key={i} className="text-zinc-400 py-1 px-2 rounded hover:bg-zinc-800/30 transition-colors">
+                    {log}
+                  </div>
+                ))}
+                {logs.length === 0 && (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl">📋</span>
+                    </div>
+                    <p className="text-zinc-500 text-sm">No logs yet...</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
