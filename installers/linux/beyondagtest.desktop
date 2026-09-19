@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=BeyondAgtest
+Comment=Agentic Mobile App Testing
+Exec=/opt/beyondagtest/beyondagtest-gui
+Icon=beyondagtest
+Terminal=false
+Type=Application
+Categories=Development;Testing;
+StartupWMClass=beyondagtest

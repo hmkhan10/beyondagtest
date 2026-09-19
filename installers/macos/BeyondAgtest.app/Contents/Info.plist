@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Bundle identity -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>BeyondAgtest</string>
+
+    <key>CFBundleExecutable</key>
+    <string>launcher.sh</string>
+
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>dev.beyondagtest</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <key>CFBundleName</key>
+    <string>BeyondAgtest</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>0.1.0</string>
+
+    <!-- Minimum macOS version -->
+    <key>LSMinimumSystemVersion</key>
+    <string>10.15</string>
+
+    <!-- High-DPI support -->
+    <key>NSHighResolutionCapable</key>
+    <true/>
+
+    <!-- Don't show in Dock unless running -->
+    <key>LSUIElement</key>
+    <false/>
+
+    <!-- Application category -->
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
+
+    <!-- Copyright -->
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright 2026 BeyondKitter. All rights reserved.</string>
+
+    <!-- Principal class -->
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+
+    <!-- Disable App Nap for background test execution -->
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+
+    <!-- Allow running in background for test execution -->
+    <key>NSSupportsSuddenTermination</key>
+    <false/>
+
+    <!-- File associations (future: .beyondagtest config files) -->
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>BeyondAgtest Project</string>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>dev.beyondagtest.project</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

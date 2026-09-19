@@ -30,3 +30,5 @@ npm-debug.log*
 # Test results
 beyondagtest-results/
 beyondagtest-reports/
+node_modules/
+.next/
