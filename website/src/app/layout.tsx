@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BeyondAgtest",
     description: "Open-source agentic mobile app testing.",
-    url: "https://beyondagtest.dev",
+    url: "https://beyondagtest.vercel.app",
     siteName: "BeyondAgtest",
     type: "website",
   },
@@ -44,6 +45,7 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
