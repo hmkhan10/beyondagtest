@@ -1,0 +1,21 @@
+{
+  "name": "@beyondagtest/core",
+  "version": "0.1.0",
+  "description": "Core agent system for BeyondAgtest",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "glob": "^10.3.0",
+    "ora": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PORT=3000
+      - DATA_DIR=/app/data
+    restart: unless-stopped
+
+  # Optional: analyzer service for headless testing
+  analyzer:
+    build: .
+    profiles:
+      - analyzer
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DATA_DIR=/app/data
+    command: ["node", "packages/cli/dist/index.js", "analyze", "--app", "/app/data/target-app"]
