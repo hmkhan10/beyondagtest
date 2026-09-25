@@ -6,8 +6,8 @@ import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from '@beyondagtest/core';
-import type { AppConfig, AgentConfig, TestResult, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from '@beyondagtest/core';
+import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from 'beyondagtest-core';
+import type { AppConfig, AgentConfig, TestResult, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from 'beyondagtest-core';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -5,15 +5,15 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from '@beyondagtest/core';
-import type { AppConfig, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from '@beyondagtest/core';
+import { Agent, generateTestPlan, discoverScreens, exportAll, detectStack } from 'beyondagtest-core';
+import type { AppConfig, Platform, Stack, TestScope, AnalysisMode, ExportOptions } from 'beyondagtest-core';
 
 const program = new Command();
 
 program
   .name('beyondagtest')
   .description('Agentic mobile app testing tool')
-  .version('0.1.0');
+  .version('0.1.1');
 
 program
   .command('analyze')
